@@ -23,15 +23,12 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Ambil Input dari Form Login
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
         try {
             Connection conn = Koneksi.getConnection();
 
-            // 2. Cek apakah Email & Password cocok di Database
-            // Catatan: Di aplikasi nyata, password harusnya di-hash (bukan plain text)
             String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, email);
@@ -40,21 +37,16 @@ public class LoginServlet extends HttpServlet {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                // --- LOGIN BERHASIL ---
-                
-                // Ambil data user dari database
                 String nama = rs.getString("nama");
-                String role = rs.getString("role"); // 'user', 'penjual', atau 'admin'
+                String role = rs.getString("role"); 
                 int id = rs.getInt("id");
 
-                // 3. Buat Session (PENTING!)
                 HttpSession session = request.getSession();
                 session.setAttribute("userId", id);
                 session.setAttribute("namaUser", nama);
                 session.setAttribute("role", role);
                 session.setAttribute("status", "login");
 
-                // 4. Arahkan ke Dashboard sesuai Role
                 if ("admin".equalsIgnoreCase(role)) {
                     response.sendRedirect("admin_dashboard.jsp");
                     
@@ -62,13 +54,10 @@ public class LoginServlet extends HttpServlet {
                     response.sendRedirect("seller_dashboard.jsp");
                     
                 } else {
-                    // Default role 'user'
                     response.sendRedirect("user_dashboard.jsp");
                 }
 
             } else {
-                // --- LOGIN GAGAL ---
-                // Redirect kembali ke index dengan pesan error
                 response.sendRedirect("index.jsp?error=invalid");
             }
 

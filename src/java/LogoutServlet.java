@@ -19,15 +19,12 @@ public class LogoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        // 1. Ambil Session saat ini
-        HttpSession session = request.getSession(false); // false = jangan buat baru jika tidak ada
+        HttpSession session = request.getSession(false);
         
         if (session != null) {
-            // 2. Hapus Session (Logout)
             session.invalidate();
         }
         
-        // 3. Arahkan kembali ke Halaman Login (index.jsp)
         response.sendRedirect("index.jsp");
     }
 }
